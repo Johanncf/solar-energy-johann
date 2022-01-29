@@ -1,24 +1,30 @@
-import logo from './logo.svg';
 import './App.css';
 
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+
+import Template from './components/Template';
+import Dash from './pages/Dashboard';
+import Geracoes from './pages/Geracoes';
+import Home from './pages/Home';
+import Unidades from './pages/Unidades';
+import CadastroUnidade from './pages/CadastroUnidade'
+
 function App() {
+  const { pathname } = useLocation()
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Template page={pathname}>
+      <ToastContainer />
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/dashboard' element={<Dash />} />
+        <Route path='/unidades' element={<Unidades />} />
+        <Route path='/unidades/cadastro' element={<CadastroUnidade action="Cadastro"/>} />
+        <Route path='/unidades/edicao/:id' element={<CadastroUnidade action="Edição"/>} />
+        <Route path='/geracoes' element={<Geracoes />} />
+      </Routes>
+    </Template>
   );
 }
 
