@@ -1,6 +1,6 @@
 <h1>Solar Energy</h1>
 
-Scripts para iniciar os servidores da aplicação:
+<h3>Scripts para iniciar os servidores da aplicação:</h3>
 
 ```
 npm start
@@ -23,11 +23,9 @@ npm run server
   <li>Lançamento de geração energética mensal</li>
 </ol>
 
-
+<h3>Demo da aplicação</h3>
 
 https://user-images.githubusercontent.com/90796061/151693265-e2374867-13a5-41c9-8344-49791e78af0e.mp4
-
-
 
 <p>Todas as telas possuem layout responsivo.</p>
 <p>A persistência dos dados de unidades e geração energética foi alcançada utilizando o pacote <strong>json-server</strong> do node.</p>
@@ -47,5 +45,5 @@ https://user-images.githubusercontent.com/90796061/151693265-e2374867-13a5-41c9-
   <li><a href="https://www.uuidgenerator.net/">Uuid</a></li>
 </ul>
 
-
+<p>Obrigado pelo interesse!</p>
 
