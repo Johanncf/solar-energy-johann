@@ -23,6 +23,12 @@ npm run server
   <li>Lançamento de geração energética mensal</li>
 </ol>
 
+
+
+https://user-images.githubusercontent.com/90796061/151693265-e2374867-13a5-41c9-8344-49791e78af0e.mp4
+
+
+
 <p>Todas as telas possuem layout responsivo.</p>
 <p>A persistência dos dados de unidades e geração energética foi alcançada utilizando o pacote <strong>json-server</strong> do node.</p>
 <p>A lista a seguir contém todos o pacotes/libs que foram utilizados no projeto</p>
