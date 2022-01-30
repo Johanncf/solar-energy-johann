@@ -26,18 +26,21 @@ export default function Home() {
         e.preventDefault()
         
         const errorsArray = []
+        let fieldError = error
 
         if (!email) {
-            setError({...error, email: true})
+            fieldError = {...fieldError, email: true}
             errorsArray.push('Campo de email é obrigatório!')
         }
 
         if (!password) {
-            setError({...error, password: true})
+            fieldError = {...fieldError, password: true}
             errorsArray.push('Campo de senha é obrigatório!')
         }
 
         if (errorsArray.length > 0) {
+            setError(fieldError)
+
             errorsArray.map(error => {
                 return toast.error(error)
             })
@@ -61,7 +64,7 @@ export default function Home() {
                         type='email' 
                         value={email} 
                         onChange={(e) => {setEmail(e.target.value); setError({...error, email: false})}}
-                        error={error.email}
+                        error={error.email} 
                     />
                     <InputLogin 
                         label='password' 
