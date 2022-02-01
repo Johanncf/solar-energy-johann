@@ -10,7 +10,7 @@ export const StyledSelect = styled.select`
     padding: 5px 10px;
 
     border-radius: 4px;
-    border: 1px solid black;
+    border: 1px solid ${props => props.error ? 'red' : 'black'};
     outline: none;
 
     font-family: 'Raleway', sans-serif;

@@ -3,6 +3,8 @@ import InputReg from "../../components/InputReg";
 import RegButton from "../../components/RegButton";
 import Select from "../../components/Select";
 
+import { axiosPOST } from "../../services/api";
+
 import { DateTime } from "luxon";
 
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
@@ -13,8 +15,6 @@ import { useState, useEffect } from "react";
 
 import { toast } from "react-toastify";
 
-import { axiosPOST } from "../../services/api";
-
 export default function Geracoes() {
 
     const [controller, setController] = useState(false)
@@ -22,8 +22,6 @@ export default function Geracoes() {
     const [unit, setUnit] = useState('')
     const [startDate, setStartDate] = useState(new Date())
     const [generation, setGeneration] = useState('')
-
-    const [newDate, setNewDate] = useState(false)
 
     const [error, setError] = useState({
         unit: false,
@@ -41,28 +39,30 @@ export default function Geracoes() {
         e.preventDefault()
 
         const errorsArray = []
+        let fieldErrorHandler = error
 
         if (!unit) {
-            setError({ ...error, unit: true })
+            fieldErrorHandler = {...fieldErrorHandler, unit: true}
             errorsArray.push('Informe a unidade geradora!')
         }
 
         if (!startDate) {
-            setError({...error, date: true})
+            fieldErrorHandler = {...fieldErrorHandler, date: true}
             errorsArray.push('Informe a data do lançamento!')
         }
 
         if (startDate > DateTime.now()) {
-            setError({...error, date: true})
+            fieldErrorHandler = {...fieldErrorHandler, date: true}
             errorsArray.push('Não é possível lançar métrica para meses futuros.')
         }
 
         if (!generation) {
-            setError({ ...error, generation: true })
+            fieldErrorHandler = {...fieldErrorHandler, generation: true}
             errorsArray.push('Métrica de geração é necessária!')
         }
 
         if (errorsArray.length > 0) {
+            setError(fieldErrorHandler)
 
             errorsArray.map(error => {
                 return toast.error(error)
@@ -89,19 +89,12 @@ export default function Geracoes() {
                     label="Unidade geradora"
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
+                    error={error.unit}
                 />
 
                 <DateWrapper >
                     <DateTitle>Mês/ano</DateTitle>
-                    {/* <DatePicker
-                        className="datepicker"
-                        selected={startDate}
-                        changed={newDate}
-                        onChange={(date) => {setStartDate(date); setNewDate(true)}}
-                        dateFormat="MM/yyyy"
-                        showMonthYearPicker
-                    /> */}
-                    <DateContainer>
+                    <DateContainer error={error.date}>
                         <LocalizationProvider dateAdapter={AdapterLuxon}>
                             <DesktopDatePicker
                                 views={['year', 'month']}
@@ -121,6 +114,7 @@ export default function Geracoes() {
                     placeholder='80'
                     value={generation}
                     onChange={(e) => setGeneration(e.target.value)}
+                    error={error.generation}
                 />
                 <RegButton
                     margin="48px 0"

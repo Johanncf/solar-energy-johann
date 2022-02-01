@@ -5,7 +5,7 @@ import styled from "styled-components";
 export const UnitsContainer = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 200px;
+    gap: 150px;
 
     margin-right: 10%;
 

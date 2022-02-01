@@ -88,10 +88,12 @@ export const DateContainer = styled.div`
     }
 
     fieldset {
-        border: 1px solid black;
+        border: 1px solid ${props => props.error ? 'red' : 'black'};
     }
 
     input {
+        font-size: 20px;
+        font-weight: 400;
         color: #53575D;
     }
 `;
