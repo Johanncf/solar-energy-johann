@@ -2,17 +2,46 @@ import logo2 from "../../assets/logo_menu.png";
 import logo1 from "../../assets/logo1.png";
 import { useLocation } from "react-router-dom";
 
-import { Header, MenuIcon, SolarLogo, PageTitle, MenuButton, NavButton, Gear, Dash, Graph, Nav, NavLogo, NavOption, NavList, Container, Main, MainContainer, Anchor, CloseMenuIcon } from "./styled.elements";
-import Home from "../../pages/Home";
+import { 
+    Header, 
+    MenuIcon, 
+    SolarLogo, 
+    PageTitle, 
+    MenuButton, 
+    NavButton, 
+    Gear, 
+    Dash, 
+    Graph,
+    Logout, 
+    Nav, 
+    NavLogo, 
+    NavOption, 
+    NavList, 
+    Container, 
+    Main, 
+    MainContainer, 
+    Anchor, 
+    CloseMenuIcon } from "./styled.elements";
 import { useState } from "react/cjs/react.development";
+import { useMsal } from "@azure/msal-react";
 
 export default function Template({ children, page }) {
+    const logOutAction = (setShow, instance) => {
+        setShow(false);
+
+        const logoutRequest = {
+            account: instance.getActiveAccount(),
+            postLogoutRedirectUri: "https://localhost:3000/",
+        }
+        instance.logoutRedirect(logoutRequest);
+    }
 
     const [isShown, setShow] = useState(false)
+    const { instance } = useMsal();
 
     const { pathname } = useLocation()
 
-    return pathname !== '/' ? (
+    return (
         <>
             <Container menu={isShown}>
                 <Nav show={isShown}>
@@ -44,7 +73,13 @@ export default function Template({ children, page }) {
                                 <NavButton active={pathname === '/geracoes' && true} onClick={() => setShow(false)}>
                                     <Gear /><NavOption>Cadastro de energia gerada</NavOption>
                                 </NavButton>
-                            </Anchor></li>
+                            </Anchor>
+                        </li>
+                        <li>
+                            <NavButton onClick={() => logOutAction(setShow, instance)}>
+                                <Logout /><NavOption>Sair</NavOption>
+                            </NavButton>
+                        </li>
                     </NavList>
                 </Nav>
                 <MainContainer>
@@ -73,7 +108,5 @@ export default function Template({ children, page }) {
                 </MainContainer>
             </Container>
         </>
-    ) : (
-        <Home />
     )
 }

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link } from 'react-router-dom';
-import { BiMenuAltRight } from 'react-icons/bi'
+import { BiMenuAltRight, BiLogOut } from 'react-icons/bi'
 import { FaChartPie } from 'react-icons/fa'
 import { BsGraphUp, BsGearFill } from 'react-icons/bs'
 import { IoCloseSharp } from 'react-icons/io5'
@@ -196,6 +196,10 @@ export const Graph = styled(BsGraphUp)`
 `;
 
 export const Gear = styled(BsGearFill)`
+    font-size: 1.8rem;
+`;
+
+export const Logout = styled(BiLogOut)`
     font-size: 1.8rem;
 `;
 
