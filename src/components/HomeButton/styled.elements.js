@@ -1,16 +1,16 @@
 import styled from "styled-components";
 
 export const StyledButton = styled.button`
-    background-color: #4CBC9A;
-    
-    font-family: "Roboto Slab", serif;
-    font-weight: 600;
-    color: #ffffff;
+	background-color: #4cbc9a;
 
-    height: 52px;
-    width: 100%;
-    border: none;
-    border-radius: 10px;
+	font-family: "Roboto Slab", serif;
+	font-weight: 600;
+	color: #ffffff;
 
-    cursor: pointer;
+	height: 52px;
+	width: 15%;
+	border: none;
+	border-radius: 10px;
+
+	cursor: pointer;
 `;

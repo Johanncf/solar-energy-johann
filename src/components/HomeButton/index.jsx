@@ -1,10 +1,5 @@
-import { StyledButton } from "./styled.elements"
+import { StyledButton } from "./styled.elements";
 
-export default function HomeButton({children, ...rest}) {
-    return (
-        <StyledButton 
-            type='submit' 
-            {...rest}
-        >{children}</StyledButton>
-    )
+export default function HomeButton({ children, ...rest }) {
+	return <StyledButton {...rest}>{children}</StyledButton>;
 }

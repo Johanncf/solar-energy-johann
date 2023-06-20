@@ -84,21 +84,11 @@ export default function Graph() {
             const res = await axiosGET('/geracoes')
 
             const lastYearGenerations = res.filter(generation => {
-                if (DateTime.now().year - DateTime.fromISO(generation.data).year === 1) {
-                    if (DateTime.now().month < DateTime.fromISO(generation.data).month) {
-                        return true
-                    } else {
-                        return false
-                    }
-                }
+                if (DateTime.now().year - DateTime.fromISO(generation.data).year === 1) 
+                    return DateTime.now().month < DateTime.fromISO(generation.data).month;
 
-                if (DateTime.now().year - DateTime.fromISO(generation.data).year === 0) {
-                    if (DateTime.now().month >= DateTime.fromISO(generation.data).month) {
-                        return true
-                    } else {
-                        return false
-                    }
-                }
+                if (DateTime.now().year - DateTime.fromISO(generation.data).year === 0)
+                    return DateTime.now().month >= DateTime.fromISO(generation.data).month;
 
                 return false
             })
