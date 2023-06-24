@@ -14,8 +14,9 @@ import { Line } from "react-chartjs-2"
 import { DateTime } from "luxon"
 
 import { useEffect, useState } from "react"
-import { axiosGET } from "../../services/api"
 import { GraphContainer } from "./styled.elements"
+import { useAccount, useMsal } from "@azure/msal-react"
+import { InteractionRequiredAuthError } from "@azure/msal-browser"
 
 Chart.register(
     CategoryScale,
@@ -74,16 +75,52 @@ labels = labels.concat(months.slice(0, currentMonthIndex + 1))
 export default function Graph() {
 
     const [energyCalc, setEnergyCalc] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    // const {execute, ...rest} = //await axiosGET('/geracoes')
+    //             useFetchWithMsal();
+    const { instance } = useMsal()
+    const accountInfo = useAccount();
+    const [ apiData, setApiData ] = useState(null)
+    // const { login, result, error } = useMsalAuthentication("redirect", {
+    //     ...configuration, 
+    //     scopes: ["https://solarenergyjohann.onmicrosoft.com/880155ac-ef66-4774-94b1-df98bf8b7c26/user_acess"],
+    //     account: instance.getActiveAccount()
+    // });
 
     useEffect(() => {
 
         async function APIcall() {
+            const accounts = instance.getAllAccounts();
+            const tokenRequest = {
+                account: accounts[0], // This is an example - Select account based on your app's requirements
+                scopes: ["https://solarenergyjohann.onmicrosoft.com/api/user_access"]
+            }
+            instance.acquireTokenSilent(tokenRequest).then(async (response) => {
+                // Call your API with the access token and return the data you need to save in state
+                console.log(response)
+                const headers = new Headers();
+                const bearer = `Bearer ${response.accessToken}`;
+                headers.append("Authorization", bearer);
+
+                let options = {
+                    method: "GET",
+                    headers: headers
+                };
+
+                const solarApiResponse = await fetch("https://localhost:7289/api/geracoes", options)
+                const data = await solarApiResponse.json();
+                setApiData(data);
+            }).catch(async (e) => {
+                console.log(e)
+
+                if (e instanceof InteractionRequiredAuthError) {
+                    await instance.acquireTokenRedirect(tokenRequest);
+                }
+
+                throw e;
+            });
 
             const energyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-            const res = await axiosGET('/geracoes')
-
-            const lastYearGenerations = res.filter(generation => {
+            const lastYearGenerations = apiData.filter(generation => {
                 if (DateTime.now().year - DateTime.fromISO(generation.data).year === 1) 
                     return DateTime.now().month < DateTime.fromISO(generation.data).month;
 
@@ -106,7 +143,7 @@ export default function Graph() {
         }
 
         APIcall()
-    }, [])
+    }, [instance, accountInfo, apiData])
 
     const data = {
         labels,
