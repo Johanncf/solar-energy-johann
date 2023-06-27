@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useCallback, useState } from "react";
-import { useMsal, useMsalAuthentication } from "@azure/msal-react";
+import { useMsal } from "@azure/msal-react";
+import { tokenRequest } from "../config/msalConfiguration";
 
+const apiBaseUrl = "https://localhost:7289/api"
 
 const connection = axios.create({
-	baseURL: "https://localhost:7289/api",
+	baseURL: apiBaseUrl,
 });
 
 export const axiosGET = async (request) => {
@@ -57,31 +59,26 @@ export const axiosDELETE = async (request) => {
 
 // ---------------------------------------------------------------------------
 
-const useFetchWithMsal = (msalRequest = null) => {
+const useFetchWithMsal = () => {
 	const { instance } = useMsal();
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const [data, setData] = useState(null);
 
-	const { result, error: msalError } = useMsalAuthentication("redirect", {
-		...msalRequest,
-		scope: "https://solarenergyjohann.onmicrosoft.com/880155ac-ef66-4774-94b1-df98bf8b7c26/user_acess",
-		account: instance.getActiveAccount(),
-		redirectUri: "/dashboard",
-	});
-
+	
 	const execute = async (method, endpoint, data = null) => {
+		const { accessToken, msalError } = await getMsalTokenRedirect(instance);
 		if (msalError) {
 			setError(msalError);
 			return;
 		}
-
-		if (result) {
+		
+		if (accessToken) {
 			try {
 				let response = null;
 
 				const headers = new Headers();
-				const bearer = `Bearer ${result.accessToken}`;
+				const bearer = `Bearer ${accessToken}`;
 				headers.append("Authorization", bearer);
 
 				if (data) headers.append("Content-Type", "application/json");
@@ -94,12 +91,18 @@ const useFetchWithMsal = (msalRequest = null) => {
 
 				setIsLoading(true);
 
-				response = await (await fetch("https://localhost:7289/api" + endpoint, options)).json();
-				console.log("teste " + response)
-				setData(response);
+				response = await fetch(apiBaseUrl + endpoint, options);
+				if (response.status) {
+					setError(response);
+					return;
+				}
+				let apiData = await response.json();
 
+				console.log("Api Response: " + response);
+				setData(apiData);
 				setIsLoading(false);
-				return response;
+
+				return apiData;
 			} catch (e) {
 				setError(e);
 				setIsLoading(false);
@@ -112,8 +115,25 @@ const useFetchWithMsal = (msalRequest = null) => {
 		isLoading,
 		error,
 		data,
-		execute: useCallback(execute, [result, msalError]), // to avoid infinite calls when inside a `useEffect`
+		execute: useCallback(execute, [instance]), // to avoid infinite calls when inside a `useEffect`
 	};
+};
+
+const getMsalTokenRedirect = async (instance) => {
+	const request = tokenRequest(instance);
+
+	try {
+		let tokenAcquisitionResult = await instance.acquireTokenSilent(request);
+		return {
+			accessToken: tokenAcquisitionResult.accessToken,
+			msalError: null
+		};
+	} catch (error) {
+		return {
+			accessToken: null,
+			msalError: error
+		};
+	}
 };
 
 export default useFetchWithMsal;

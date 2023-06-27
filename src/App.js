@@ -1,6 +1,5 @@
 import "./App.css";
 
-import { MsalAuthenticationTemplate } from "@azure/msal-react";
 
 import { Routes, Route, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -12,9 +11,9 @@ import Unidades from "./pages/Unidades";
 import CadastroUnidade from "./pages/CadastroUnidade";
 import Home from "./pages/Home";
 
-const LoadingComponent = () => <p>Authentication in progress...</p>;
+//const LoadingComponent = () => <p>Authentication in progress...</p>;
 
-const ErrorComponent = ({ error }) => <p>An error ocurred: {error}</p>;
+//const ErrorComponent = ({ error }) => <p>An error ocurred: {error}</p>;
 
 function App() {
 	const { pathname } = useLocation();
