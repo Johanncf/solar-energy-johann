@@ -3,7 +3,7 @@
 const CLIENT_ID = "75abf102-3152-4f0c-b467-13d11e8b65df"
 const TENENT_DOMAIN = "solarenergyjohann"
 const API_SCOPE = "user_access"
-const APP_DOMAIN = "localhost:3000"
+const APP_DOMAIN = "https://localhost:3000"
 
 const scopes = [`https://${TENENT_DOMAIN}.onmicrosoft.com/api/${API_SCOPE}`];
 
@@ -12,12 +12,12 @@ const configuration = {
 		clientId: CLIENT_ID,
 		authority: `https://${TENENT_DOMAIN}.b2clogin.com/${TENENT_DOMAIN}.onmicrosoft.com/B2C_1_signup_signin`, // Choose SUSI as your default authority.
 		knownAuthorities: [`${TENENT_DOMAIN}.b2clogin.com`], // Mark your B2C tenant's domain as trusted.
-		redirectUri: `https://${APP_DOMAIN}/dashboard/`
+		redirectUri: `${APP_DOMAIN}/dashboard`
 	}
 };
 
 const loginRequest = {
-	redirectStartPage: "https://localhost:3000/dashboard",
+	redirectStartPage: `${APP_DOMAIN}/dashboard`,
 	//scopes: ["openid", "user_acess"],
 	extraQueryParameters: {
 		ui_locales: "pt-br",
@@ -34,7 +34,7 @@ const tokenRequest = (instance) => {
 const logoutRequest = (instance) => {
 	return {
 		account: instance.getActiveAccount(),
-		postLogoutRedirectUri: `https://${APP_DOMAIN}/`
+		postLogoutRedirectUri: `${APP_DOMAIN}`
 	};
 };
 

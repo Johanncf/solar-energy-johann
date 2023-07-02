@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { axiosGET } from "../../services/api";
 import { CardInfo, CardsContainer, CardTitle, DashCard } from "./styled.elements";
+import useFetchWithMsal from "../../hooks/useFetchWithMsal";
 
 export default function DashCards() {
 
     const [totalUnits, setTotalUnits] = useState(0)
     const [activeUnits, setActiveUnits] = useState(0)
     const [averageEnergy, setAverageEnergy] = useState(0)
+    const { execute } = useFetchWithMsal();
 
     useEffect(() => {
         let totalEnergy = 0
         let handleActiveUnits = 0
 
         async function APIcall() {
-
-            const units = await axiosGET('/unidades')
-            const generations = await axiosGET('/geracoes')
+            const units = await execute('GET', 'unidades');
+            const generations = await execute('GET', 'geracoes')
 
             units.filter(unit => {
                 return unit.Ativo
@@ -34,7 +34,7 @@ export default function DashCards() {
 
         APIcall()
 
-    }, [])
+    }, [execute])
 
     return (
         <CardsContainer>

@@ -3,8 +3,6 @@ import InputReg from "../../components/InputReg";
 import RegButton from "../../components/RegButton";
 import Select from "../../components/Select";
 
-import { axiosPOST } from "../../services/api";
-
 import { DateTime } from "luxon";
 
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
@@ -14,8 +12,10 @@ import DesktopDatePicker from '@mui/lab/DesktopDatePicker';
 import { useState, useEffect } from "react";
 
 import { toast } from "react-toastify";
+import useFetchWithMsal from "../../hooks/useFetchWithMsal";
 
 export default function Geracoes() {
+    const { execute } = useFetchWithMsal();
 
     const [controller, setController] = useState(false)
 
@@ -69,8 +69,7 @@ export default function Geracoes() {
             })
 
         } else {
-
-            axiosPOST('/geracoes', {
+            execute('POST', 'geracoes', {
                 nome: unit,
                 data: startDate,
                 geracao: generation
@@ -78,6 +77,15 @@ export default function Geracoes() {
                 toast.success('Geração lançada com sucesso')
                 setController(!controller)
             })
+
+            // axiosPOST('/geracoes', {
+            //     nome: unit,
+            //     data: startDate,
+            //     geracao: generation
+            // }).then(() => {
+            //     toast.success('Geração lançada com sucesso')
+            //     setController(!controller)
+            // })
 
         }
     }

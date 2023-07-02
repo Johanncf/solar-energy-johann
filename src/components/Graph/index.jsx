@@ -16,7 +16,6 @@ import { DateTime } from "luxon"
 import { useEffect, useState } from "react"
 import { GraphContainer } from "./styled.elements"
 import useFetchWithMsal from "../../hooks/useFetchWithMsal"
-import { scopes } from "../../config/msalConfiguration"
 
 Chart.register(
     CategoryScale,
@@ -27,6 +26,43 @@ Chart.register(
     Tooltip,
     Legend
 );
+
+export default function Graph() {
+
+    const [energyCalc, setEnergyCalc] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    const { execute, error } = useFetchWithMsal();
+
+    useEffect(() => {
+        const apiCall = async () => {
+            const apiResponseData = await execute("GET", "geracoes");
+            const lastYearEnergyProduction = getLastYearEnergyProduction(apiResponseData);
+            const energyArray = getEnergyArray(lastYearEnergyProduction)
+            setEnergyCalc(energyArray)
+        }
+        apiCall()
+    }, [execute])
+
+    const componentData = {
+        labels,
+        datasets: [
+            {
+                data: energyCalc,
+                borderColor: 'rgb(53, 162, 235)',
+                backgroundColor: 'rgba(53, 162, 235, 0.5)'
+            }
+        ]
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
+
+    return (
+        <GraphContainer>
+            <Line options={options} data={componentData} />
+        </GraphContainer>
+    )
+}
 
 const options = {
     responsive: true,
@@ -72,65 +108,29 @@ const currentMonthIndex = months.findIndex(month => month === DateTime.now().set
 let labels = months.slice(currentMonthIndex + 1, months.length)
 labels = labels.concat(months.slice(0, currentMonthIndex + 1))
 
-export default function Graph() {
+const getLastYearEnergyProduction = (data) => {
+    return data.filter(generation => {
+        if (DateTime.now().year - DateTime.fromISO(generation.data).year === 1) 
+            return DateTime.now().month < DateTime.fromISO(generation.data).month;
 
-    const [energyCalc, setEnergyCalc] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-    const [ apiData, setApiData ] = useState([])
-    const { execute, error, data } = useFetchWithMsal({scopes: scopes});
+        if (DateTime.now().year - DateTime.fromISO(generation.data).year === 0)
+            return DateTime.now().month >= DateTime.fromISO(generation.data).month;
 
-    useEffect(() => {
-        const apiCall = async () => {
-            //if (apiData == null) {
-                const apiResponseData = await execute("GET", "/geracoes");
-                setApiData(apiResponseData)
-                const energyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                const lastYearGenerations = apiData.filter(generation => {
-                    if (DateTime.now().year - DateTime.fromISO(generation.data).year === 1) 
-                        return DateTime.now().month < DateTime.fromISO(generation.data).month;
-            
-                    if (DateTime.now().year - DateTime.fromISO(generation.data).year === 0)
-                        return DateTime.now().month >= DateTime.fromISO(generation.data).month;
-            
-                    return false
-                })
-            
-                labels.map((month, index) => {
-                    return lastYearGenerations.map(generation => {
-                        if (month === DateTime.fromISO(generation.data).setLocale('pt-BR').toLocaleString({ month: 'long' })) {
-                            energyArray[index] += parseFloat(generation.geracao)
-                        }
-                        return energyArray
-                    })
-                })
-            
-                setEnergyCalc(energyArray)
-            //}
-        }
-        apiCall()
-    }, [execute, data, apiData])
+        return false
+    })
+}
 
-    
+const getEnergyArray = (lastYearEnergyProduction) => {
+    const energyArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-
-
-    const componentData = {
-        labels,
-        datasets: [
-            {
-                data: energyCalc,
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgba(53, 162, 235, 0.5)'
+    labels.map((month, index) => {
+        return lastYearEnergyProduction.map(generation => {
+            if (month === DateTime.fromISO(generation.data).setLocale('pt-BR').toLocaleString({ month: 'long' })) {
+                energyArray[index] += parseFloat(generation.geracao)
             }
-        ]
-    }
+            return energyArray
+        })
+    })
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    }
-
-    return (
-        <GraphContainer>
-            <Line options={options} data={componentData} />
-        </GraphContainer>
-    )
+    return energyArray;
 }
